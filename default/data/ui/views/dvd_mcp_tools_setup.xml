@@ -59,7 +59,7 @@
 
             <section class="properties-section">
               <div class="section-heading">
-                <button type="button" class="secondary-btn add-property-btn" id="add-property">Add Property</button>
+                <button type="button" class="secondary-btn add-property-btn" id="add-property">Add Properties</button>
               </div>
               <div id="properties-list"></div>
               <div id="property-template" class="hidden" aria-hidden="true">
