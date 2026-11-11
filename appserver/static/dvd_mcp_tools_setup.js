@@ -3,6 +3,7 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
 
     var service = mvc.createService();
     var IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]*$/;
+    var RESERVED_TOOL_ARGUMENTS = ["app", "workload_pool"];
     var macros = [];
 
     function val(selector) { return $.trim($(selector).val()); }
@@ -160,6 +161,9 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
             return "Property names must start with a letter or underscore and contain only letters, numbers, or underscores.";
         }
         if (names.some(function (name, index) { return names.indexOf(name) !== index; })) { return "Property names must be unique."; }
+        if (names.some(function (name) { return RESERVED_TOOL_ARGUMENTS.indexOf(name) !== -1; })) {
+            return "Property names 'app' and 'workload_pool' are reserved tool arguments.";
+        }
         if (!/^dvd_[A-Za-z0-9_]+$/.test(currentMacroName())) { return "Macro name must start with dvd_ and use a valid suffix."; }
         if (!definition) { return "Macro definition is required."; }
         var missing = names.filter(function (name) { return definition.indexOf(toVar(name)) === -1; })[0];
@@ -184,7 +188,19 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
     }
 
     function buildSchema(properties) {
-        var schema = { type: "object", properties: {} };
+        var app = appId();
+        var schema = { type: "object", properties: {
+            app: {
+                type: "string",
+                description: "External app ID selected in the tool builder.",
+                enum: [app],
+                default: app
+            },
+            workload_pool: {
+                type: "string",
+                description: "Workload pool to use; determine this value after inference."
+            }
+        } };
         var required = [];
         properties.forEach(function (property) {
             var field = { type: property.type, description: property.description || property.name };
@@ -208,8 +224,9 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
     }
 
     function createTool(name, properties) {
+        var toolName = val("#tool-name");
         var payload = {
-            name: val("#tool-name"),
+            name: toolName,
             title: val("#tool-title"),
             description: val("#tool-description"),
             inputSchema: buildSchema(properties),
