@@ -6,7 +6,7 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
     var PROPERTY_TYPES = ["string", "integer", "number", "boolean"];
     var macros = [];
 
-    // ---------------------------------------------------------------- helpers
+    // --------------------------------------------------------------- helpers
 
     function val(selector) { return $.trim($(selector).val()); }
     function appId() { return val("#external-app-id") || "search"; }
@@ -14,27 +14,13 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
     function toVar(name) { return "$" + name + "$"; }
 
     function setStatus(message, isError) {
-        $("#status-message")
-            .removeClass("error success")
+        $("#status-message").removeClass("error success")
             .addClass(isError ? "error" : "success")
             .text(message);
     }
 
     function splitList(text) {
-        return text.split(",")
-            .map(function (item) { return $.trim(item); })
-            .filter(Boolean);
-    }
-
-    // Wraps the callback-style Splunk request in a jQuery promise.
-    // Resolves with the response, rejects with a readable error string.
-    function request(path, method, query, post, body, headers) {
-        var deferred = $.Deferred();
-        service.request(path, method, query, post, body, headers, function (error, response) {
-            if (error) { deferred.reject(errorText(error, response)); }
-            else { deferred.resolve(response); }
-        });
-        return deferred.promise();
+        return text.split(",").map(function (item) { return $.trim(item); }).filter(Boolean);
     }
 
     function errorText(error, response) {
@@ -44,14 +30,25 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
         try {
             var parsed = typeof data === "string" ? JSON.parse(data) : data;
             if (parsed.messages && parsed.messages.length) { return parsed.messages[0].text; }
-        } catch (ignore) { /* fall through to raw text */ }
+        } catch (ignore) { /* Use the raw response below. */ }
         return typeof data === "string" ? data : JSON.stringify(data);
     }
 
-    // ------------------------------------------------------------ form state
+    // Keep the SplunkJS positional API in one place so all REST calls use the
+    // same callback behavior. `post` is form data; `body` is raw JSON text.
+    function request(path, method, query, post, body, headers) {
+        var deferred = $.Deferred();
+        service.request(path, method, query, post, body, headers, function (error, response) {
+            if (error) { deferred.reject(errorText(error, response)); }
+            else { deferred.resolve(response); }
+        });
+        return deferred.promise();
+    }
+
+    // ----------------------------------------------------------- form values
 
     function readProperties() {
-        return $(".property-row").map(function () {
+        return $("#properties-list .property-row").map(function () {
             var $row = $(this);
             return {
                 name: $.trim($row.find(".property-name").val()),
@@ -75,10 +72,10 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
     }
 
     function callTemplate(name, properties) {
-        return name + "(" + properties.map(function (p) { return toVar(p.name); }).join(",") + ")";
+        return name + "(" + properties.map(function (property) { return toVar(property.name); }).join(",") + ")";
     }
 
-    // ------------------------------------------------------------- UI updates
+    // --------------------------------------------------------------- preview
 
     function updatePreview() {
         var properties = readProperties();
@@ -90,27 +87,18 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
         );
     }
 
-    function control(label, html) {
-        return '<div class="property-control"><label>' + label + "</label>" + html + "</div>";
+    // The property row markup and controls live in the XML. JS only clones the
+    // existing row and enables its form controls; it does not build UI markup.
+    function addProperty() {
+        var $row = $("#property-template .property-row").clone()
+            .removeClass("property-template-row");
+        $row.find(":input").prop("disabled", false);
+        $("#properties-list").append($row);
+        updatePreview();
     }
 
-    function addProperty() {
-        var typeOptions = PROPERTY_TYPES.map(function (t) {
-            return '<option value="' + t + '">' + t + "</option>";
-        }).join("");
-
-        $("#properties-list").append(
-            '<div class="property-row">' +
-                control("Name", '<input type="text" class="property-name" placeholder="property_name" ' +
-                    'pattern="[A-Za-z_][A-Za-z0-9_]*" required>') +
-                control("Type", '<select class="property-type">' + typeOptions + "</select>") +
-                control("Description", '<input type="text" class="property-description" placeholder="Description for the LLM">') +
-                control("Allowed values", '<input type="text" class="property-choices" ' +
-                    'placeholder="Allowed values, comma-separated (optional)">') +
-                '<label class="required-control"><input type="checkbox" class="property-required"> Required</label>' +
-                '<button type="button" class="remove-property">Remove</button>' +
-            "</div>"
-        );
+    function onRemoveProperty() {
+        $(this).closest(".property-row").remove();
         updatePreview();
     }
 
@@ -125,7 +113,7 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
         $("#macro-definition").prop("readonly", existing);
 
         if (!existing) {
-            $("#macro-definition-help").html("Every property must have a matching <code>$property_name$</code> variable.");
+            $("#macro-definition-help").text("Every property must have a matching $property_name$ variable.");
         } else if (macro) {
             $("#macro-definition").val(macro.definition);
             $("#macro-definition-help").text("Prebuilt macro definition is read-only. Property names must match its arguments and variables.");
@@ -136,7 +124,7 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
         updatePreview();
     }
 
-    // -------------------------------------------------------- loading macros
+    // ---------------------------------------------------------- macro lookup
 
     function macroArgs(entry) {
         var args = entry.content && entry.content.args;
@@ -160,17 +148,15 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
             .done(function (response) {
                 try {
                     var data = typeof response.data === "string" ? JSON.parse(response.data) : response.data;
-                    macros = ((data && data.entry) || [])
-                        .map(function (entry) {
-                            return {
-                                name: entry.name.replace(/\s*\([^)]*\)$/, ""),   // strip "(args)" suffix
-                                args: macroArgs(entry),
-                                definition: (entry.content && entry.content.definition) || ""
-                            };
-                        })
-                        .filter(function (macro) { return macro.name.indexOf("dvd_") === 0; });
-                } catch (e) {
-                    showMacroLoadError("Unable to load macros", "Splunk returned an unreadable macro list: " + e.message);
+                    macros = ((data && data.entry) || []).map(function (entry) {
+                        return {
+                            name: entry.name.replace(/\s*\([^)]*\)$/, ""),
+                            args: macroArgs(entry),
+                            definition: (entry.content && entry.content.definition) || ""
+                        };
+                    }).filter(function (macro) { return macro.name.indexOf("dvd_") === 0; });
+                } catch (error) {
+                    showMacroLoadError("Unable to load macros", "Splunk returned an unreadable macro list: " + error.message);
                     return;
                 }
 
@@ -182,27 +168,25 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
                     $select.append($("<option>", { value: macro.name, text: macro.name }));
                 });
                 if (!macros.length) {
-                    setStatus("No prebuilt dvd_ macros were returned for app '" + appId() +
-                        "'. Check app selection and permissions.", true);
+                    setStatus("No prebuilt dvd_ macros were returned for app '" + appId() + "'. Check app selection and permissions.", true);
                 }
                 updatePreview();
             })
             .fail(function (message) {
-                showMacroLoadError("Unable to load macros",
-                    "Could not load macros from app '" + appId() + "': " + message);
+                showMacroLoadError("Unable to load macros", "Could not load macros from app '" + appId() + "': " + message);
             });
     }
 
-    // ------------------------------------------------------------ validation
+    // -------------------------------------------------------------- validate
 
     function validate(properties, definition, macro) {
         if (!properties.length) { return "Add at least one property before creating the tool."; }
 
-        var names = properties.map(function (p) { return p.name; });
-        if (names.some(function (n) { return !IDENTIFIER.test(n); })) {
+        var names = properties.map(function (property) { return property.name; });
+        if (names.some(function (name) { return !IDENTIFIER.test(name); })) {
             return "Property names must start with a letter or underscore and contain only letters, numbers, or underscores.";
         }
-        if (names.some(function (n, i) { return names.indexOf(n) !== i; })) {
+        if (names.some(function (name, index) { return names.indexOf(name) !== index; })) {
             return "Property names must be unique.";
         }
         if (!/^dvd_[A-Za-z0-9_]+$/.test(currentMacroName())) {
@@ -210,7 +194,7 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
         }
         if (!definition) { return "Macro definition is required."; }
 
-        var missing = names.filter(function (n) { return definition.indexOf(toVar(n)) === -1; })[0];
+        var missing = names.filter(function (name) { return definition.indexOf(toVar(name)) === -1; })[0];
         if (missing) { return "Macro definition must include " + toVar(missing) + " for every property."; }
 
         if (isExisting()) {
@@ -225,7 +209,7 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
         return "";
     }
 
-    // -------------------------------------------------------- Splunk requests
+    // ---------------------------------------------------------- schema + API
 
     function parseChoice(value, type) {
         if (type === "integer") { return parseInt(value, 10); }
@@ -238,14 +222,14 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
         var schema = { type: "object", properties: {} };
         var required = [];
 
-        properties.forEach(function (p) {
-            var field = { type: p.type, description: p.description || p.name };
-            var choices = splitList(p.choices);
+        properties.forEach(function (property) {
+            var field = { type: property.type, description: property.description || property.name };
+            var choices = splitList(property.choices);
             if (choices.length) {
-                field.enum = choices.map(function (c) { return parseChoice(c, p.type); });
+                field.enum = choices.map(function (choice) { return parseChoice(choice, property.type); });
             }
-            schema.properties[p.name] = field;
-            if (p.required) { required.push(p.name); }
+            schema.properties[property.name] = field;
+            if (property.required) { required.push(property.name); }
         });
 
         if (required.length) { schema.required = required; }
@@ -257,7 +241,7 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
         return request(path, "POST", { output_mode: "json" }, {
             name: name,
             definition: definition,
-            args: properties.map(function (p) { return p.name; }).join(","),
+            args: properties.map(function (property) { return property.name; }).join(","),
             iseval: "0"
         });
     }
@@ -280,15 +264,16 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
                 examples: []
             }
         };
-        return request("/services/mcp_tools", "POST", null, null, JSON.stringify(payload),
-            { "Content-Type": "application/json" });
+        return request("/services/mcp_tools", "POST", null, null, JSON.stringify(payload), {
+            "Content-Type": "application/json"
+        });
     }
 
-    function prefixed(prefix) {
+    function rejectWith(prefix) {
         return function (message) { return $.Deferred().reject(prefix + message).promise(); };
     }
 
-    // ---------------------------------------------------------------- submit
+    // --------------------------------------------------------------- submit
 
     function onSubmit(event) {
         event.preventDefault();
@@ -300,9 +285,12 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
         var properties = readProperties();
         var definition = val("#macro-definition");
         var name = currentMacroName();
+        var validationError = validate(properties, definition, selectedMacro());
 
-        var error = validate(properties, definition, selectedMacro());
-        if (error) { setStatus(error, true); return; }
+        if (validationError) {
+            setStatus(validationError, true);
+            return;
+        }
 
         $submit.prop("disabled", true);
 
@@ -313,13 +301,13 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
         } else {
             setStatus("Creating search macro...", false);
             macroStep = createMacro(name, definition, properties)
-                .then(null, prefixed("Macro creation failed: "));
+                .then(null, rejectWith("Macro creation failed: "));
         }
 
         macroStep
             .then(function () {
                 if (!existing) { setStatus("Macro created. Creating MCP tool...", false); }
-                return createTool(name, properties).then(null, prefixed(
+                return createTool(name, properties).then(null, rejectWith(
                     (existing ? "" : "Macro was created, but ") + "MCP tool creation failed: "
                 ));
             })
@@ -345,12 +333,8 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
     $(function () {
         $("#add-property").on("click", addProperty);
         $("#properties-list")
-            .on("input change", ".property-row input, .property-row select", updatePreview)
-            .on("click", ".remove-property", function () {
-                $(this).closest(".property-row").remove();
-                updatePreview();
-            });
-
+            .on("input change", ".property-row :input", updatePreview)
+            .on("click", ".remove-property", onRemoveProperty);
         $("#macro-suffix").on("input", updatePreview);
         $("#macro-mode, #existing-macro").on("change", syncMacroMode);
         $("#reload-macros").on("click", loadMacros);
