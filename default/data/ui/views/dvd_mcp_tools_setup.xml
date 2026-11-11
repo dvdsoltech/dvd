@@ -65,7 +65,7 @@
               <div id="property-template" class="hidden" aria-hidden="true">
                 <div class="property-row property-template-row">
                   <div class="property-control">
-                    <label>Name
+                    <label>Property Name
                       <input type="text" class="property-name" placeholder="property_name" pattern="[A-Za-z_][A-Za-z0-9_]*" required="true" disabled="true" />
                     </label>
                   </div>
@@ -89,7 +89,7 @@
                       <textarea class="property-choices" placeholder="Allowed values, comma-separated (optional)" disabled="true" rows="2"></textarea>
                     </label>
                   </div>
-                  <label class="required-control"><input type="checkbox" class="property-required" disabled="true" /> Required</label>
+               
                   <button type="button" class="remove-property" disabled="true">Remove</button>
                 </div>
               </div>
