@@ -1,20 +1,25 @@
+/* Narrow, neutral styling for the MCP tool builder. */
 body {
-    background: #0b1220;
-    color: #e6edf5;
-    font-family: "Segoe UI", sans-serif;
+    color: #e5e7eb;
+    font-family: "Segoe UI", Arial, sans-serif;
 }
 
 .mcp-wrap {
-    background: #111827;
-    border: 1px solid #243244;
-    border-radius: 12px;
-    padding: 20px;
+    box-sizing: border-box;
+    width: min(100%, 780px);
+    margin: 8px auto;
+    padding: 22px;
+    color: #e5e7eb;
+    background: rgba(25, 28, 32, 0.62);
+    border: 1px solid rgba(220, 225, 230, 0.16);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
 }
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(220px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
 }
 
 .field,
@@ -22,39 +27,43 @@ body {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    min-width: 0;
 }
 
 .field.full {
     grid-column: 1 / -1;
 }
 
-label {
-    color: #b6c2d1;
+.mcp-wrap label {
+    color: #c5c9ce;
     font-size: 12px;
     font-weight: 600;
 }
 
-input,
-textarea,
-select,
-button {
-    border: 1px solid #334155;
-    border-radius: 8px;
-    background: #0f172a;
-    color: #e5edf7;
-    font-size: 14px;
-    padding: 10px 12px;
+.mcp-wrap input,
+.mcp-wrap textarea,
+.mcp-wrap select,
+.mcp-wrap button {
+    box-sizing: border-box;
+    border: 1px solid rgba(210, 216, 222, 0.2);
+    border-radius: 6px;
+    background: rgba(17, 19, 22, 0.64);
+    color: #e5e7eb;
+    font: inherit;
+    font-size: 13px;
+    padding: 9px 11px;
 }
 
-input:focus,
-textarea:focus,
-select:focus {
-    border-color: #60a5fa;
-    outline: none;
+.mcp-wrap input:focus,
+.mcp-wrap textarea:focus,
+.mcp-wrap select:focus {
+    border-color: #9ca3af;
+    outline: 2px solid rgba(156, 163, 175, 0.18);
+    outline-offset: 1px;
 }
 
-textarea {
-    min-height: 90px;
+.mcp-wrap textarea {
+    min-height: 82px;
     resize: vertical;
 }
 
@@ -66,20 +75,24 @@ textarea {
 }
 
 .macro-name-input {
-    padding-left: 12px;
-    border: 1px solid #334155;
-    border-radius: 8px;
-    background: #0f172a;
-    color: #93c5fd;
+    padding-left: 10px;
+    border: 1px solid rgba(210, 216, 222, 0.2);
+    border-radius: 6px;
+    background: rgba(17, 19, 22, 0.64);
+    color: #c5c9ce;
+    font-family: monospace;
 }
 
 .macro-name-input input {
     flex: 1;
+    min-width: 0;
     border: 0;
+    background: transparent;
 }
 
 .inline-control select {
     flex: 1;
+    min-width: 0;
 }
 
 .hidden {
@@ -88,28 +101,31 @@ textarea {
 
 .properties-section,
 .preview-section {
-    margin-top: 24px;
-    padding-top: 18px;
-    border-top: 1px solid #243244;
+    margin-top: 21px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(220, 225, 230, 0.14);
 }
 
 .section-heading {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 16px;
-    margin-bottom: 14px;
+    gap: 14px;
+    margin-bottom: 12px;
 }
 
-h3 {
-    margin: 0 0 6px;
-    font-size: 16px;
+.mcp-wrap h3 {
+    margin: 0 0 5px;
+    color: #f3f4f6;
+    font-size: 15px;
+    font-weight: 600;
 }
 
-p,
-small {
-    color: #9aabba;
-    font-size: 13px;
+.mcp-wrap p,
+.mcp-wrap small {
+    color: #aeb4bb;
+    font-size: 12px;
+    line-height: 1.5;
 }
 
 .section-heading p,
@@ -119,93 +135,100 @@ small {
 
 .property-row {
     display: grid;
-    grid-template-columns: repeat(4, minmax(120px, 1fr)) auto auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) auto auto;
     align-items: end;
     gap: 10px;
-    margin-bottom: 12px;
-    padding: 14px;
-    border: 1px solid #27364a;
-    border-radius: 10px;
-    background: #0d1626;
+    margin-bottom: 10px;
+    padding: 12px;
+    border: 1px solid rgba(220, 225, 230, 0.14);
+    border-radius: 8px;
+    background: rgba(17, 19, 22, 0.35);
 }
 
 .required-control {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding-bottom: 10px;
+    padding-bottom: 9px;
     white-space: nowrap;
+}
+
+.required-control input {
+    accent-color: #9ca3af;
 }
 
 .remove-property {
     cursor: pointer;
-    color: #fecaca;
-    background: #36151c;
+    color: #d1d5db !important;
 }
 
 #macro-call-preview {
     display: block;
     overflow-wrap: anywhere;
-    padding: 14px;
-    border: 1px solid #334155;
-    border-radius: 8px;
-    background: #0b1220;
-    color: #93c5fd;
+    padding: 12px;
+    border: 1px solid rgba(220, 225, 230, 0.16);
+    border-radius: 6px;
+    background: rgba(17, 19, 22, 0.48);
+    color: #d1d5db;
     font-family: monospace;
+    font-size: 12px;
 }
 
 .macro-definition-field {
-    margin-top: 20px;
+    margin-top: 18px;
 }
 
 .form-actions {
     display: flex;
-    gap: 12px;
-    margin-top: 20px;
+    gap: 9px;
+    margin-top: 18px;
 }
 
-button {
+.mcp-wrap button {
     cursor: pointer;
     font-weight: 600;
+    transition: background 0.15s ease, border-color 0.15s ease;
 }
 
-.primary-btn {
-    border: 0;
-    background: #2563eb;
+.mcp-wrap button:hover {
+    border-color: rgba(220, 225, 230, 0.4);
+    background-color: rgba(120, 126, 133, 0.2);
+}
+
+.mcp-wrap .primary-btn {
+    border-color: rgba(220, 225, 230, 0.28);
+    background: rgba(125, 132, 140, 0.35);
     color: #fff;
-}
-
-.secondary-btn {
-    background: #1f2937;
 }
 
 .status-message {
     display: none;
-    margin-top: 18px;
+    margin-top: 15px;
     padding: 10px 12px;
-    border-radius: 8px;
-    font-size: 13px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font-size: 12px;
 }
 
 .status-message.success {
     display: block;
-    background: #123321;
-    color: #86efac;
+    border-color: rgba(134, 180, 145, 0.3);
+    background: rgba(62, 93, 70, 0.25);
+    color: #c9dfce;
 }
 
 .status-message.error {
     display: block;
-    background: #3b1717;
-    color: #fca5a5;
+    border-color: rgba(190, 130, 130, 0.3);
+    background: rgba(100, 54, 54, 0.25);
+    color: #e5caca;
 }
 
-@media (max-width: 800px) {
-    .property-row {
-        grid-template-columns: repeat(2, minmax(140px, 1fr));
+@media (max-width: 640px) {
+    .mcp-wrap {
+        padding: 16px;
     }
-}
 
-@media (max-width: 600px) {
     .grid,
     .property-row {
         grid-template-columns: 1fr;
