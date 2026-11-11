@@ -233,6 +233,8 @@ body {
     font-size: 12px;
 }
 
+#macro-definition { width: 500px; }
+
 .macro-definition-layout {
     display: grid;
     grid-template-columns: minmax(150px, 1fr) minmax(0, 3fr);
