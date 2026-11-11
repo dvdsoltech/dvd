@@ -8,19 +8,19 @@
             <div class="tool-details-grid">
               <div class="field">
                 <label for="tool-name">Tool Name</label>
-                <input id="tool-name" type="text" value="dvd_inventory" required="true" />
+                <input id="tool-name" type="text" value="" required="true" />
               </div>
               <div class="field">
                 <label for="tool-title">Title</label>
-                <input id="tool-title" type="text" value="Managed_Assets" required="true" />
+                <input id="tool-title" type="text" value="" required="true" />
               </div>
               <div class="field">
-                <label for="external-app-id">External App ID</label>
+                <label for="external-app-id">App</label>
                 <input id="external-app-id" type="text" value="search" required="true" />
               </div>
               <div class="field description-field">
                 <label for="tool-description">Description</label>
-                <textarea id="tool-description" rows="1" required="true">Search for managed assets</textarea>
+                <textarea id="tool-description" rows="1" required="true"></textarea>
               </div>
             </div>
 
