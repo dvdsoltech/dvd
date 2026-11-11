@@ -33,7 +33,7 @@ body {
     gap: 14px;
     margin-top: 18px;
     padding-top: 16px;
-    border-top: 1px dashed rgba(220, 225, 230, 0.28);
+   
 }
 
 .field,
@@ -127,7 +127,7 @@ body {
 .preview-section {
     margin-top: 21px;
     padding-top: 16px;
-    border-top: 1px solid rgba(220, 225, 230, 0.14);
+    
 }
 
 .section-heading {
