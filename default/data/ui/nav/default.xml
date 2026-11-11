@@ -1,0 +1,5 @@
+<nav >
+  <view name="dvd_mcp_tools_setup" default="true" />
+  <view name="search"  />
+  <view name="dashboards" />
+</nav>
