@@ -1,94 +1,231 @@
-require(["splunkjs/mvc", "jquery"], function(mvc, $) {
+require(["splunkjs/mvc", "jquery"], function (mvc, $) {
     "use strict";
 
+    var service = mvc.createService();
+    var IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]*$/;
+    var PROPERTY_TYPES = ["string", "integer", "number", "boolean"];
     var macros = [];
 
+    // ---------------------------------------------------------------- helpers
+
+    function val(selector) { return $.trim($(selector).val()); }
+    function appId() { return val("#external-app-id") || "search"; }
+    function isExisting() { return $("#macro-mode").val() === "existing"; }
+    function toVar(name) { return "$" + name + "$"; }
+
     function setStatus(message, isError) {
-        $("#status-message").removeClass("error success")
-            .addClass(isError ? "error" : "success").text(message);
+        $("#status-message")
+            .removeClass("error success")
+            .addClass(isError ? "error" : "success")
+            .text(message);
     }
 
-    function appId() {
-        return $.trim($("#external-app-id").val()) || "search";
+    function splitList(text) {
+        return text.split(",")
+            .map(function (item) { return $.trim(item); })
+            .filter(Boolean);
     }
 
-    function existingMode() {
-        return $("#macro-mode").val() === "existing";
-    }
-
-    function propertiesFromForm() {
-        var properties = [];
-        $(".property-row").each(function() {
-            var $row = $(this);
-            var name = $.trim($row.find(".property-name").val());
-            if (name) {
-                properties.push({
-                    name: name,
-                    type: $row.find(".property-type").val(),
-                    description: $.trim($row.find(".property-description").val()),
-                    choices: $.trim($row.find(".property-choices").val()),
-                    required: $row.find(".property-required").is(":checked")
-                });
-            }
+    // Wraps the callback-style Splunk request in a jQuery promise.
+    // Resolves with the response, rejects with a readable error string.
+    function request(path, method, query, post, body, headers) {
+        var deferred = $.Deferred();
+        service.request(path, method, query, post, body, headers, function (error, response) {
+            if (error) { deferred.reject(errorText(error, response)); }
+            else { deferred.resolve(response); }
         });
-        return properties;
+        return deferred.promise();
+    }
+
+    function errorText(error, response) {
+        if (error && error.message) { return error.message; }
+        var data = response && response.data;
+        if (!data) { return "Check Splunk permissions and the endpoint response."; }
+        try {
+            var parsed = typeof data === "string" ? JSON.parse(data) : data;
+            if (parsed.messages && parsed.messages.length) { return parsed.messages[0].text; }
+        } catch (ignore) { /* fall through to raw text */ }
+        return typeof data === "string" ? data : JSON.stringify(data);
+    }
+
+    // ------------------------------------------------------------ form state
+
+    function readProperties() {
+        return $(".property-row").map(function () {
+            var $row = $(this);
+            return {
+                name: $.trim($row.find(".property-name").val()),
+                type: $row.find(".property-type").val(),
+                description: $.trim($row.find(".property-description").val()),
+                choices: $.trim($row.find(".property-choices").val()),
+                required: $row.find(".property-required").is(":checked")
+            };
+        }).get().filter(function (property) { return property.name; });
+    }
+
+    function currentMacroName() {
+        if (isExisting()) { return $("#existing-macro").val() || ""; }
+        var suffix = val("#macro-suffix");
+        return suffix ? "dvd_" + suffix : "";
     }
 
     function selectedMacro() {
         var name = $("#existing-macro").val();
-        for (var i = 0; i < macros.length; i += 1) {
-            if (macros[i].name === name) { return macros[i]; }
-        }
-        return null;
+        return macros.filter(function (macro) { return macro.name === name; })[0] || null;
     }
 
-    function currentMacroName() {
-        if (existingMode()) { return $("#existing-macro").val() || ""; }
-        var suffix = $.trim($("#macro-suffix").val());
-        return suffix ? "dvd_" + suffix : "";
+    function callTemplate(name, properties) {
+        return name + "(" + properties.map(function (p) { return toVar(p.name); }).join(",") + ")";
     }
+
+    // ------------------------------------------------------------- UI updates
 
     function updatePreview() {
-        var properties = propertiesFromForm();
+        var properties = readProperties();
         var name = currentMacroName();
-        if (!name || !properties.length) {
-            $("#macro-call-preview").text("Add a property and choose a macro to preview the call.");
-            return;
-        }
-        var args = properties.map(function(property) { return "$" + property.name + "$"; });
-        $("#macro-call-preview").text(name + "(" + args.join(",") + ")");
+        $("#macro-call-preview").text(
+            name && properties.length
+                ? callTemplate(name, properties)
+                : "Add a property and choose a macro to preview the call."
+        );
+    }
+
+    function control(label, html) {
+        return '<div class="property-control"><label>' + label + "</label>" + html + "</div>";
     }
 
     function addProperty() {
-        var $row = $("<div>", { "class": "property-row" });
-        var $name = $("<input>", {
-            type: "text", "class": "property-name", placeholder: "property_name",
-            pattern: "[A-Za-z_][A-Za-z0-9_]*", required: "true"
-        });
-        var $type = $("<select>", { "class": "property-type" });
-        ["string", "integer", "number", "boolean"].forEach(function(type) {
-            $type.append($("<option>", { value: type, text: type }));
-        });
-        var $description = $("<input>", {
-            type: "text", "class": "property-description", placeholder: "Description for the LLM"
-        });
-        var $choices = $("<input>", {
-            type: "text", "class": "property-choices", placeholder: "Allowed values, comma-separated (optional)"
-        });
-        var $required = $("<input>", { type: "checkbox", "class": "property-required" });
-        var $remove = $("<button>", { type: "button", "class": "remove-property", text: "Remove" });
+        var typeOptions = PROPERTY_TYPES.map(function (t) {
+            return '<option value="' + t + '">' + t + "</option>";
+        }).join("");
 
-        $row.append(
-            $("<div>", { "class": "property-control" }).append($("<label>", { text: "Name" }), $name),
-            $("<div>", { "class": "property-control" }).append($("<label>", { text: "Type" }), $type),
-            $("<div>", { "class": "property-control" }).append($("<label>", { text: "Description" }), $description),
-            $("<div>", { "class": "property-control" }).append($("<label>", { text: "Allowed values" }), $choices),
-            $("label", { "class": "required-control" }).append($required, " Required"),
-            $remove
+        $("#properties-list").append(
+            '<div class="property-row">' +
+                control("Name", '<input type="text" class="property-name" placeholder="property_name" ' +
+                    'pattern="[A-Za-z_][A-Za-z0-9_]*" required>') +
+                control("Type", '<select class="property-type">' + typeOptions + "</select>") +
+                control("Description", '<input type="text" class="property-description" placeholder="Description for the LLM">') +
+                control("Allowed values", '<input type="text" class="property-choices" ' +
+                    'placeholder="Allowed values, comma-separated (optional)">') +
+                '<label class="required-control"><input type="checkbox" class="property-required"> Required</label>' +
+                '<button type="button" class="remove-property">Remove</button>' +
+            "</div>"
         );
-        $("#properties-list").append($row);
         updatePreview();
     }
+
+    function syncMacroMode() {
+        var existing = isExisting();
+        var macro = selectedMacro();
+
+        $(".macro-create-only").toggleClass("hidden", existing);
+        $(".macro-existing-only").toggleClass("hidden", !existing);
+        $("#macro-suffix").prop("required", !existing);
+        $("#existing-macro").prop("required", existing);
+        $("#macro-definition").prop("readonly", existing);
+
+        if (!existing) {
+            $("#macro-definition-help").html("Every property must have a matching <code>$property_name$</code> variable.");
+        } else if (macro) {
+            $("#macro-definition").val(macro.definition);
+            $("#macro-definition-help").text("Prebuilt macro definition is read-only. Property names must match its arguments and variables.");
+        } else {
+            $("#macro-definition").val("");
+            $("#macro-definition-help").text("Select a prebuilt macro to inspect its definition and arguments.");
+        }
+        updatePreview();
+    }
+
+    // -------------------------------------------------------- loading macros
+
+    function macroArgs(entry) {
+        var args = entry.content && entry.content.args;
+        if (Array.isArray(args)) { return args; }
+        return typeof args === "string" ? splitList(args) : [];
+    }
+
+    function showMacroLoadError(selectText, statusText) {
+        macros = [];
+        $("#existing-macro").empty().append($("<option>", { value: "", text: selectText }));
+        setStatus(statusText, true);
+    }
+
+    function loadMacros() {
+        var $select = $("#existing-macro")
+            .empty()
+            .append($("<option>", { value: "", text: "Loading macros..." }));
+        var path = "/servicesNS/nobody/" + encodeURIComponent(appId()) + "/data/macros";
+
+        request(path, "GET", { output_mode: "json", count: 0 })
+            .done(function (response) {
+                try {
+                    var data = typeof response.data === "string" ? JSON.parse(response.data) : response.data;
+                    macros = ((data && data.entry) || [])
+                        .map(function (entry) {
+                            return {
+                                name: entry.name.replace(/\s*\([^)]*\)$/, ""),   // strip "(args)" suffix
+                                args: macroArgs(entry),
+                                definition: (entry.content && entry.content.definition) || ""
+                            };
+                        })
+                        .filter(function (macro) { return macro.name.indexOf("dvd_") === 0; });
+                } catch (e) {
+                    showMacroLoadError("Unable to load macros", "Splunk returned an unreadable macro list: " + e.message);
+                    return;
+                }
+
+                $select.empty().append($("<option>", {
+                    value: "",
+                    text: macros.length ? "Select a prebuilt dvd_ macro" : "No dvd_ macros found in this app"
+                }));
+                macros.forEach(function (macro) {
+                    $select.append($("<option>", { value: macro.name, text: macro.name }));
+                });
+                if (!macros.length) {
+                    setStatus("No prebuilt dvd_ macros were returned for app '" + appId() +
+                        "'. Check app selection and permissions.", true);
+                }
+                updatePreview();
+            })
+            .fail(function (message) {
+                showMacroLoadError("Unable to load macros",
+                    "Could not load macros from app '" + appId() + "': " + message);
+            });
+    }
+
+    // ------------------------------------------------------------ validation
+
+    function validate(properties, definition, macro) {
+        if (!properties.length) { return "Add at least one property before creating the tool."; }
+
+        var names = properties.map(function (p) { return p.name; });
+        if (names.some(function (n) { return !IDENTIFIER.test(n); })) {
+            return "Property names must start with a letter or underscore and contain only letters, numbers, or underscores.";
+        }
+        if (names.some(function (n, i) { return names.indexOf(n) !== i; })) {
+            return "Property names must be unique.";
+        }
+        if (!/^dvd_[A-Za-z0-9_]+$/.test(currentMacroName())) {
+            return "Macro name must start with dvd_ and use a valid suffix.";
+        }
+        if (!definition) { return "Macro definition is required."; }
+
+        var missing = names.filter(function (n) { return definition.indexOf(toVar(n)) === -1; })[0];
+        if (missing) { return "Macro definition must include " + toVar(missing) + " for every property."; }
+
+        if (isExisting()) {
+            if (!macro) { return "Select a prebuilt dvd_ macro before creating the tool."; }
+            if (macro.args.slice().sort().join(",") !== names.slice().sort().join(",")) {
+                return "Macro parameters do not match these properties. Conform the properties to the macro or manually update the macro, then Reload.";
+            }
+        }
+        if (!val("#tool-name") || !val("#tool-title") || !val("#tool-description")) {
+            return "Tool name, title, and description are required.";
+        }
+        return "";
+    }
+
+    // -------------------------------------------------------- Splunk requests
 
     function parseChoice(value, type) {
         if (type === "integer") { return parseInt(value, 10); }
@@ -98,174 +235,44 @@ require(["splunkjs/mvc", "jquery"], function(mvc, $) {
     }
 
     function buildSchema(properties) {
-        var fields = {};
+        var schema = { type: "object", properties: {} };
         var required = [];
-        properties.forEach(function(property) {
-            var field = { type: property.type, description: property.description || property.name };
-            if (property.choices) {
-                var choices = property.choices.split(",").map(function(value) {
-                    return $.trim(value);
-                }).filter(function(value) { return value.length > 0; });
-                if (choices.length) {
-                    field.enum = choices.map(function(value) { return parseChoice(value, property.type); });
-                }
+
+        properties.forEach(function (p) {
+            var field = { type: p.type, description: p.description || p.name };
+            var choices = splitList(p.choices);
+            if (choices.length) {
+                field.enum = choices.map(function (c) { return parseChoice(c, p.type); });
             }
-            fields[property.name] = field;
-            if (property.required) { required.push(property.name); }
+            schema.properties[p.name] = field;
+            if (p.required) { required.push(p.name); }
         });
-        var schema = { type: "object", properties: fields };
+
         if (required.length) { schema.required = required; }
         return schema;
     }
 
-    function responseData(response) {
-        if (!response || response.data === undefined || response.data === null) { return {}; }
-        return typeof response.data === "string" ? JSON.parse(response.data) : response.data;
-    }
-
-    function macroArgs(entry) {
-        var args = entry.content && entry.content.args;
-        if (Array.isArray(args)) { return args; }
-        if (typeof args === "string") {
-            return args.split(",").map(function(arg) { return $.trim(arg); }).filter(function(arg) { return arg.length > 0; });
-        }
-        return [];
-    }
-
-    function macroNameFromEntry(entry) {
-        return entry.name.replace(/\s*\([^)]*\)$/, "");
-    }
-
-    function requestError(error, response) {
-        if (error && error.message) { return error.message; }
-        if (response && response.data) {
-            try {
-                var data = responseData(response);
-                if (data.messages && data.messages.length) { return data.messages[0].text; }
-                return typeof response.data === "string" ? response.data : JSON.stringify(response.data);
-            } catch (ignore) {
-                return String(response.data);
-            }
-        }
-        return "Check Splunk permissions and the endpoint response.";
-    }
-
-    function loadMacros() {
-        var $select = $("#existing-macro");
-        $select.empty().append($("<option>", { value: "", text: "Loading macros..." }));
-        var path = "/servicesNS/nobody/" + encodeURIComponent(appId()) + "/data/macros";
-
-        mvc.createService().request(path, "GET", { output_mode: "json", count: 0 }, null, null, null,
-            function(error, response) {
-                if (error) {
-                    macros = [];
-                    $select.empty().append($("<option>", { value: "", text: "Unable to load macros" }));
-                    setStatus("Could not load macros from app '" + appId() + "': " + requestError(error, response), true);
-                    return;
-                }
-                try {
-                    var entries = responseData(response).entry || [];
-                    macros = entries.filter(function(entry) {
-                        return entry && typeof entry.name === "string" && macroNameFromEntry(entry).indexOf("dvd_") === 0;
-                    }).map(function(entry) {
-                        return {
-                            name: macroNameFromEntry(entry),
-                            args: macroArgs(entry),
-                            definition: entry.content && entry.content.definition ? entry.content.definition : ""
-                        };
-                    });
-                    $select.empty().append($("<option>", {
-                        value: "", text: macros.length ? "Select a prebuilt dvd_ macro" : "No dvd_ macros found in this app"
-                    }));
-                    macros.forEach(function(macro) {
-                        $select.append($("<option>", { value: macro.name, text: macro.name }));
-                    });
-                    if (!macros.length) {
-                        setStatus("No prebuilt dvd_ macros were returned for app '" + appId() + "'. Check app selection and permissions.", true);
-                    }
-                    updatePreview();
-                } catch (parseError) {
-                    macros = [];
-                    $select.empty().append($("<option>", { value: "", text: "Could not read macros" }));
-                    setStatus("Splunk returned an unreadable macro list: " + parseError.message, true);
-                }
-            }
-        );
-    }
-
-    function syncMacroMode() {
-        var existing = existingMode();
-        $(".macro-create-only").toggleClass("hidden", existing);
-        $(".macro-existing-only").toggleClass("hidden", !existing);
-        $("#macro-suffix").prop("required", !existing);
-        $("#existing-macro").prop("required", existing);
-        $("#macro-definition").prop("readonly", existing);
-
-        var macro = selectedMacro();
-        if (existing && macro) {
-            $("#macro-definition").val(macro.definition);
-            $("#macro-definition-help").text("Prebuilt macro definition is read-only. Property names must match its arguments and variables.");
-        } else if (existing) {
-            $("#macro-definition").val("");
-            $("#macro-definition-help").text("Select a prebuilt macro to inspect its definition and arguments.");
-        } else {
-            $("#macro-definition-help").html("Every property must have a matching <code>$property_name$</code> variable.");
-        }
-        updatePreview();
-    }
-
-    function validate(properties, definition, macro) {
-        if (!properties.length) { return "Add at least one property before creating the tool."; }
-        var seen = {};
-        for (var i = 0; i < properties.length; i += 1) {
-            var name = properties[i].name;
-            if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) {
-                return "Property names must start with a letter or underscore and contain only letters, numbers, or underscores.";
-            }
-            if (seen[name]) { return "Property names must be unique."; }
-            seen[name] = true;
-            if (definition.indexOf("$" + name + "$") === -1) {
-                return "Macro definition must include $" + name + "$ for every property.";
-            }
-        }
-        if (!/^dvd_[A-Za-z0-9_]+$/.test(currentMacroName())) { return "Macro name must start with dvd_ and use a valid suffix."; }
-        if (!definition) { return "Macro definition is required."; }
-        if (existingMode()) {
-            if (!macro) { return "Select a prebuilt dvd_ macro before creating the tool."; }
-            var macroProperties = macro.args.slice().sort();
-            var formProperties = properties.map(function(property) { return property.name; }).sort();
-            if (macroProperties.length !== formProperties.length || macroProperties.some(function(arg, index) { return arg !== formProperties[index]; })) {
-                return "Macro parameters do not match these properties. Conform the properties to the macro or manually update the macro, then Reload.";
-            }
-        }
-        if (!$.trim($("#tool-name").val()) || !$.trim($("#tool-title").val()) || !$.trim($("#tool-description").val())) {
-            return "Tool name, title, and description are required.";
-        }
-        return "";
-    }
-
-    function createMacro(name, definition, properties, callback) {
+    function createMacro(name, definition, properties) {
         var path = "/servicesNS/nobody/" + encodeURIComponent(appId()) + "/configs/conf-macros";
-        mvc.createService().request(path, "POST", { output_mode: "json" }, {
+        return request(path, "POST", { output_mode: "json" }, {
             name: name,
             definition: definition,
-            args: properties.map(function(property) { return property.name; }).join(","),
+            args: properties.map(function (p) { return p.name; }).join(","),
             iseval: "0"
-        }, null, null, callback);
+        });
     }
 
-    function createTool(properties, name, callback) {
-        var invocationArgs = properties.map(function(property) { return "$" + property.name + "$"; });
+    function createTool(name, properties) {
         var payload = {
-            name: $.trim($("#tool-name").val()),
-            title: $.trim($("#tool-title").val()),
-            description: $.trim($("#tool-description").val()),
+            name: val("#tool-name"),
+            title: val("#tool-title"),
+            description: val("#tool-description"),
             inputSchema: buildSchema(properties),
             _meta: {
                 external_app_id: appId(),
                 execution: {
                     type: "spl",
-                    template: name + "(" + invocationArgs.join(",") + ")",
+                    template: callTemplate(name, properties),
                     row_limiter: true,
                     time_range: false
                 },
@@ -273,80 +280,83 @@ require(["splunkjs/mvc", "jquery"], function(mvc, $) {
                 examples: []
             }
         };
-        mvc.createService().request("/services/mcp_tools", "POST", null, null, JSON.stringify(payload), {
-            "Content-Type": "application/json"
-        }, callback);
+        return request("/services/mcp_tools", "POST", null, null, JSON.stringify(payload),
+            { "Content-Type": "application/json" });
     }
 
-    $(function() {
-        $("#add-property").on("click", addProperty);
-        $("#properties-list").on("input change", ".property-row input, .property-row select", updatePreview);
-        $("#properties-list").on("click", ".remove-property", function() {
-            $(this).closest(".property-row").remove();
-            updatePreview();
-        });
-        $("#macro-suffix").on("input", updatePreview);
-        $("#macro-mode").on("change", syncMacroMode);
-        $("#existing-macro").on("change", syncMacroMode);
-        $("#reload-macros").on("click", loadMacros);
-        $("#external-app-id").on("change", function() { if (existingMode()) { loadMacros(); } });
+    function prefixed(prefix) {
+        return function (message) { return $.Deferred().reject(prefix + message).promise(); };
+    }
 
-        $("#mcp-form").on("submit", function(event) {
-            event.preventDefault();
-            var $submit = $(".primary-btn");
-            if ($submit.prop("disabled")) { return; }
+    // ---------------------------------------------------------------- submit
 
-            var properties = propertiesFromForm();
-            var macro = selectedMacro();
-            var definition = $.trim($("#macro-definition").val());
-            var error = validate(properties, definition, macro);
-            if (error) { setStatus(error, true); return; }
+    function onSubmit(event) {
+        event.preventDefault();
 
-            var name = currentMacroName();
-            $submit.prop("disabled", true);
+        var $submit = $(".primary-btn");
+        if ($submit.prop("disabled")) { return; }
 
-            function finish(errorMessage) {
-                $submit.prop("disabled", false);
-                if (errorMessage) { setStatus(errorMessage, true); }
-            }
+        var existing = isExisting();
+        var properties = readProperties();
+        var definition = val("#macro-definition");
+        var name = currentMacroName();
 
-            function postTool() {
-                setStatus("Macro created. Creating MCP tool...", false);
-                createTool(properties, name, function(toolError, response) {
-                    if (toolError) {
-                        finish("Macro was created, but MCP tool creation failed: " + requestError(toolError, response));
-                        return;
-                    }
-                    $submit.prop("disabled", false);
-                    setStatus("Macro and MCP tool created successfully: " + name, false);
-                });
-            }
+        var error = validate(properties, definition, selectedMacro());
+        if (error) { setStatus(error, true); return; }
 
-            if (existingMode()) {
-                setStatus("Creating MCP tool with prebuilt macro...", false);
-                postTool();
-                return;
-            }
+        $submit.prop("disabled", true);
 
+        var macroStep;
+        if (existing) {
+            setStatus("Creating MCP tool with prebuilt macro...", false);
+            macroStep = $.Deferred().resolve().promise();
+        } else {
             setStatus("Creating search macro...", false);
-            createMacro(name, definition, properties, function(macroError, response) {
-                if (macroError) {
-                    finish("Macro creation failed: " + requestError(macroError, response));
-                    return;
-                }
-                postTool();
-            });
-        });
+            macroStep = createMacro(name, definition, properties)
+                .then(null, prefixed("Macro creation failed: "));
+        }
 
-        $("#reset-btn").on("click", function() {
-            $("#mcp-form")[0].reset();
-            $("#properties-list").empty();
-            $("#external-app-id").val("search");
-            $("#macro-definition").val("");
-            $("#status-message").removeClass("error success").text("");
-            syncMacroMode();
-            loadMacros();
-        });
+        macroStep
+            .then(function () {
+                if (!existing) { setStatus("Macro created. Creating MCP tool...", false); }
+                return createTool(name, properties).then(null, prefixed(
+                    (existing ? "" : "Macro was created, but ") + "MCP tool creation failed: "
+                ));
+            })
+            .then(
+                function () { setStatus("Macro and MCP tool created successfully: " + name, false); },
+                function (message) { setStatus(message, true); }
+            )
+            .always(function () { $submit.prop("disabled", false); });
+    }
+
+    function onReset() {
+        $("#mcp-form")[0].reset();
+        $("#properties-list").empty();
+        $("#external-app-id").val("search");
+        $("#macro-definition").val("");
+        $("#status-message").removeClass("error success").text("");
+        syncMacroMode();
+        loadMacros();
+    }
+
+    // ------------------------------------------------------------------ init
+
+    $(function () {
+        $("#add-property").on("click", addProperty);
+        $("#properties-list")
+            .on("input change", ".property-row input, .property-row select", updatePreview)
+            .on("click", ".remove-property", function () {
+                $(this).closest(".property-row").remove();
+                updatePreview();
+            });
+
+        $("#macro-suffix").on("input", updatePreview);
+        $("#macro-mode, #existing-macro").on("change", syncMacroMode);
+        $("#reload-macros").on("click", loadMacros);
+        $("#external-app-id").on("change", function () { if (isExisting()) { loadMacros(); } });
+        $("#mcp-form").on("submit", onSubmit);
+        $("#reset-btn").on("click", onReset);
 
         syncMacroMode();
         loadMacros();
