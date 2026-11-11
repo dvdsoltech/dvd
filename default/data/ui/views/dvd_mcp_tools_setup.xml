@@ -23,7 +23,7 @@
               </div>
               <div class="field">
                 <label for="external-app-id">App</label>
-                <input id="external-app-id" type="text" value="search" required="true" />
+                <input id="external-app-id" type="text" value="dvd" required="true" />
               </div>
               <div class="field description-field">
                 <label for="tool-description">Description</label>
