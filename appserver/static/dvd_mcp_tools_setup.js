@@ -198,7 +198,8 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
             },
             workload_pool: {
                 type: "string",
-                description: "Splunk workload pool to run this search in."
+                description: "Splunk workload pool to run this search in.",
+                default: "standard_perf"
             }
         } };
         var required = [];
