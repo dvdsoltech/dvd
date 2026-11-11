@@ -10,4 +10,6 @@ Marrying the Macro to an MCP tool appeared as a potential solution.
 
 The tool zips these together producing an MCP tool with the associated macro as its SPL template and properties that correspond with the macro variables. 
 
+Of course, you could do this all manually...
+
 As with anything in tech these days, it's hard to tell what might be useful and for how long it will be useful. Hope this makes some admin's day just a little lighter. 
