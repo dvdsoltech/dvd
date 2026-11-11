@@ -1,19 +1,19 @@
-<dashboard version="1.1" script="dvd_mcp_tools_setup.js" stylesheet="dvd_mcp_tools_setup.css" hideEdit="false" hideExport="false">
-    <label>MCP Tool Builder</label>
-    <row>
-        <panel>
-            <title>Create a guided MCP tool</title>
-            <html>
+<dashboard version="1.1" script="dvd_mcp_tools_setup.js" stylesheet="dvd_mcp_tools_setup.css,background_dark.css" hideEdit="false" hideExport="false" theme="dark">
+  <label>MCP Tool Builder</label>
+  <row>
+    <panel>
+      <title>Create a guided MCP tool</title>
+      <html>
                 <div class="mcp-wrap">
                     <form id="mcp-form">
                         <div class="grid">
                             <div class="field">
                                 <label for="tool-name">Tool name</label>
-                                <input id="tool-name" type="text" value="dvd_inventory" required="true" />
+                                <input id="tool-name" type="text" value="dvd_inventory" required="true"/>
                             </div>
                             <div class="field">
                                 <label for="tool-title">Title</label>
-                                <input id="tool-title" type="text" value="Managed_Assets" required="true" />
+                                <input id="tool-title" type="text" value="Managed_Assets" required="true"/>
                             </div>
                             <div class="field full">
                                 <label for="tool-description">Description</label>
@@ -21,7 +21,7 @@
                             </div>
                             <div class="field">
                                 <label for="external-app-id">External app ID</label>
-                                <input id="external-app-id" type="text" value="search" required="true" />
+                                <input id="external-app-id" type="text" value="search" required="true"/>
                             </div>
                             <div class="field">
                                 <label for="macro-mode">Macro option</label>
@@ -34,7 +34,7 @@
                                 <label for="macro-suffix">New macro name</label>
                                 <div class="macro-name-input">
                                     <span>dvd_</span>
-                                    <input id="macro-suffix" type="text" placeholder="my_macro" pattern="[A-Za-z0-9_]+" required="true" />
+                                    <input id="macro-suffix" type="text" placeholder="my_macro" pattern="[A-Za-z0-9_]+" required="true"/>
                                 </div>
                             </div>
                             <div class="field macro-existing-only hidden">
@@ -56,7 +56,7 @@
                                 </div>
                                 <button type="button" class="secondary-btn" id="add-property">Add property</button>
                             </div>
-                            <div id="properties-list"></div>
+                            <div id="properties-list"/>
                         </section>
 
                         <section class="preview-section">
@@ -67,7 +67,7 @@
 
                         <div class="field macro-definition-field">
                             <label for="macro-definition">Macro definition</label>
-                            <textarea id="macro-definition" placeholder="For example: index=assets host=$entity_dns$" required="true"></textarea>
+                            <textarea id="macro-definition" placeholder="For example: index=assets host=$entity_dns$" required="true"/>
                             <small id="macro-definition-help">Every property must have a matching <code>$property_name$</code> variable.</small>
                         </div>
 
@@ -75,10 +75,10 @@
                             <button type="submit" class="primary-btn">Create Macro and Tool</button>
                             <button type="button" class="secondary-btn" id="reset-btn">Reset</button>
                         </div>
-                        <div id="status-message" class="status-message" aria-live="polite"></div>
+                        <div id="status-message" class="status-message" aria-live="polite"/>
                     </form>
                 </div>
             </html>
-        </panel>
-    </row>
+    </panel>
+  </row>
 </dashboard>
