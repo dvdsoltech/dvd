@@ -45,6 +45,7 @@ body {
 .mcp-wrap select,
 .mcp-wrap button {
     box-sizing: border-box;
+    max-width: 100%;
     border: 1px solid rgba(210, 216, 222, 0.2);
     border-radius: 6px;
     background: rgba(17, 19, 22, 0.64);
@@ -72,6 +73,7 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+    min-width: 0;
 }
 
 .macro-name-input {
@@ -145,19 +147,40 @@ body {
     background: rgba(17, 19, 22, 0.35);
 }
 
+/* Let property fields shrink inside grid tracks instead of overflowing. */
+.property-row > .property-control {
+    min-width: 0;
+}
+
+.property-control input,
+.property-control select {
+    width: 100%;
+    min-width: 0;
+}
+
 .required-control {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     gap: 6px;
-    padding-bottom: 9px;
+    min-width: 0;
+    padding: 0 2px 9px;
     white-space: nowrap;
 }
 
 .required-control input {
+    flex: 0 0 auto;
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    padding: 0;
     accent-color: #9ca3af;
 }
 
-.remove-property {
+.property-row .remove-property {
+    justify-self: end;
+    align-self: end;
+    white-space: nowrap;
     cursor: pointer;
     color: #d1d5db !important;
 }
