@@ -1,7 +1,7 @@
 # DVDs
 While working on some agentic orchestration projects, there were times that I knew precisely the query or lookup I wanted the agent to reference. The built-in splunk_run_query tool was a bit too open-ended and I knew being more explicit in the prompts wouldn't scale well. Organizing these queries as knowledge objects within the MCP tools seemed doable though mapping tool properties wasn't as strict as I would have liked and less intuitive than managing the typical Splunk knowledge objects.
 
-Marrying the Macro to an MCP appeared as a potential solution. 
+Marrying the Macro to an MCP tool appeared as a potential solution. 
 
 1. Enter the typical MCP tool attributes (name, title, etc.)
 2. Enter a macro name or select a predefined macro (note the naming convention)
