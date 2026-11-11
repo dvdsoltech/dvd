@@ -58,10 +58,10 @@
             </div>
 
             <section class="properties-section">
+              <div id="properties-list"></div>
               <div class="section-heading">
                 <button type="button" class="secondary-btn add-property-btn" id="add-property">Add Properties</button>
               </div>
-              <div id="properties-list"></div>
               <div id="property-template" class="hidden" aria-hidden="true">
                 <div class="property-row property-template-row">
                   <div class="property-control">
