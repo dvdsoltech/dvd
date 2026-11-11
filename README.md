@@ -27,6 +27,6 @@ Pairing a macro with an MCP tool turned out to be a useful and quick administrat
 
 DVDs then produces an MCP tool whose SPL template is the associated macro, with properties that correspond to the macro's variables.
 
-## Why not do it manually?
+Up until 
 
-You could, and it works fine. Or you could wait until Splunk ships something native. :)
+<img width="680" height="1100" alt="example_form" src="https://github.com/user-attachments/assets/b4a447c1-9313-405c-a3a8-227aa98550e4" />
