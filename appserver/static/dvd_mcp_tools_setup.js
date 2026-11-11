@@ -155,43 +155,42 @@ require(["splunkjs/mvc", "jquery"], function(mvc, $) {
         $select.empty().append($("<option>", { value: "", text: "Loading macros..." }));
         var path = "/servicesNS/nobody/" + encodeURIComponent(appId()) + "/data/macros";
 
-        mvc.createService().request(path, {
-            method: "GET",
-            query: { output_mode: "json", count: 0 }
-        }, function(error, response) {
-            if (error) {
-                macros = [];
-                $select.empty().append($("<option>", { value: "", text: "Unable to load macros" }));
-                setStatus("Could not load macros from app '" + appId() + "': " + requestError(error, response), true);
-                return;
-            }
-            try {
-                var entries = responseData(response).entry || [];
-                macros = entries.filter(function(entry) {
-                    return entry && typeof entry.name === "string" && macroNameFromEntry(entry).indexOf("dvd_") === 0;
-                }).map(function(entry) {
-                    return {
-                        name: macroNameFromEntry(entry),
-                        args: macroArgs(entry),
-                        definition: entry.content && entry.content.definition ? entry.content.definition : ""
-                    };
-                });
-                $select.empty().append($("<option>", {
-                    value: "", text: macros.length ? "Select a prebuilt dvd_ macro" : "No dvd_ macros found in this app"
-                }));
-                macros.forEach(function(macro) {
-                    $select.append($("<option>", { value: macro.name, text: macro.name }));
-                });
-                if (!macros.length) {
-                    setStatus("No prebuilt dvd_ macros were returned for app '" + appId() + "'. Check app selection and permissions.", true);
+        mvc.createService().request(path, "GET", { output_mode: "json", count: 0 }, null, null, null,
+            function(error, response) {
+                if (error) {
+                    macros = [];
+                    $select.empty().append($("<option>", { value: "", text: "Unable to load macros" }));
+                    setStatus("Could not load macros from app '" + appId() + "': " + requestError(error, response), true);
+                    return;
                 }
-                updatePreview();
-            } catch (parseError) {
-                macros = [];
-                $select.empty().append($("<option>", { value: "", text: "Could not read macros" }));
-                setStatus("Splunk returned an unreadable macro list: " + parseError.message, true);
+                try {
+                    var entries = responseData(response).entry || [];
+                    macros = entries.filter(function(entry) {
+                        return entry && typeof entry.name === "string" && macroNameFromEntry(entry).indexOf("dvd_") === 0;
+                    }).map(function(entry) {
+                        return {
+                            name: macroNameFromEntry(entry),
+                            args: macroArgs(entry),
+                            definition: entry.content && entry.content.definition ? entry.content.definition : ""
+                        };
+                    });
+                    $select.empty().append($("<option>", {
+                        value: "", text: macros.length ? "Select a prebuilt dvd_ macro" : "No dvd_ macros found in this app"
+                    }));
+                    macros.forEach(function(macro) {
+                        $select.append($("<option>", { value: macro.name, text: macro.name }));
+                    });
+                    if (!macros.length) {
+                        setStatus("No prebuilt dvd_ macros were returned for app '" + appId() + "'. Check app selection and permissions.", true);
+                    }
+                    updatePreview();
+                } catch (parseError) {
+                    macros = [];
+                    $select.empty().append($("<option>", { value: "", text: "Could not read macros" }));
+                    setStatus("Splunk returned an unreadable macro list: " + parseError.message, true);
+                }
             }
-        });
+        );
     }
 
     function syncMacroMode() {
@@ -247,16 +246,12 @@ require(["splunkjs/mvc", "jquery"], function(mvc, $) {
 
     function createMacro(name, definition, properties, callback) {
         var path = "/servicesNS/nobody/" + encodeURIComponent(appId()) + "/configs/conf-macros";
-        mvc.createService().request(path, {
-            method: "POST",
-            query: { output_mode: "json" },
-            body: {
-                name: name,
-                definition: definition,
-                args: properties.map(function(property) { return property.name; }).join(","),
-                iseval: "0"
-            }
-        }, callback);
+        mvc.createService().request(path, "POST", { output_mode: "json" }, {
+            name: name,
+            definition: definition,
+            args: properties.map(function(property) { return property.name; }).join(","),
+            iseval: "0"
+        }, null, null, callback);
     }
 
     function createTool(properties, name, callback) {
@@ -278,10 +273,8 @@ require(["splunkjs/mvc", "jquery"], function(mvc, $) {
                 examples: []
             }
         };
-        mvc.createService().request("/services/mcp_tools", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
+        mvc.createService().request("/services/mcp_tools", "POST", null, null, JSON.stringify(payload), {
+            "Content-Type": "application/json"
         }, callback);
     }
 
