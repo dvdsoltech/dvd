@@ -94,7 +94,7 @@
             </section>
 
             <div class="macro-definition-layout">
-              <small id="macro-definition-help">Every property must have a matching <code>$property_name$</code> variable.</small>
+              <small id="macro-definition-help">Every property added must have a corresponding <code>$property_name$</code> within the macro definition.</small>
               <div class="field macro-definition-field">
                 <label for="macro-definition">Macro Definition</label>
                 <textarea id="macro-definition" placeholder="For example: index=assets host=$entity_dns$" required="true"></textarea>
