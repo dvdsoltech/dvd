@@ -2,46 +2,49 @@
   <label>MCP Tool Builder</label>
   <row>
     <panel>
-      <title>Create a guided MCP tool</title>
+      <title>Create a Guided MCP Tool</title>
       <html>
         <div class="mcp-wrap">
           <form id="mcp-form">
-            <div class="grid">
+            <div class="tool-details-grid">
               <div class="field">
-                <label for="tool-name">Tool name</label>
+                <label for="tool-name">Tool Name</label>
                 <input id="tool-name" type="text" value="dvd_inventory" required="true" />
               </div>
               <div class="field">
                 <label for="tool-title">Title</label>
                 <input id="tool-title" type="text" value="Managed_Assets" required="true" />
               </div>
-              <div class="field full">
-                <label for="tool-description">Description</label>
-                <textarea id="tool-description" required="true">Search for managed assets</textarea>
-              </div>
               <div class="field">
-                <label for="external-app-id">External app ID</label>
+                <label for="external-app-id">External App ID</label>
                 <input id="external-app-id" type="text" value="search" required="true" />
               </div>
-              <div class="field">
-                <label for="macro-mode">Macro option</label>
+              <div class="field description-field">
+                <label for="tool-description">Description</label>
+                <textarea id="tool-description" rows="2" required="true">Search for managed assets</textarea>
+              </div>
+            </div>
+
+            <div class="macro-options-row">
+              <div class="field macro-option-field">
+                <label for="macro-mode">Macro Option</label>
                 <select id="macro-mode" required="true">
-                  <option value="create">Create a new macro</option>
-                  <option value="existing">Use a prebuilt dvd_ macro</option>
+                  <option value="create">Create a New Macro</option>
+                  <option value="existing">Use a Prebuilt dvd_ Macro</option>
                 </select>
               </div>
               <div class="field macro-create-only">
-                <label for="macro-suffix">New macro name</label>
+                <label for="macro-suffix">New Macro Name</label>
                 <div class="macro-name-input">
                   <span>dvd_</span>
                   <input id="macro-suffix" type="text" placeholder="my_macro" pattern="[A-Za-z0-9_]+" required="true" />
                 </div>
               </div>
               <div class="field macro-existing-only hidden">
-                <label for="existing-macro">Prebuilt macro</label>
+                <label for="existing-macro">Prebuilt Macro</label>
                 <div class="inline-control">
                   <select id="existing-macro" required="true">
-                    <option value="">Loading macros...</option>
+                    <option value="">Loading Macros...</option>
                   </select>
                   <button type="button" class="secondary-btn" id="reload-macros">Reload</button>
                 </div>
@@ -50,27 +53,23 @@
 
             <section class="properties-section">
               <div class="section-heading">
-                <div>
-                  <h3>Tool properties</h3>
-                  <p>Add at least one property. Descriptions and allowed values help guide the LLM toward deterministic calls.</p>
-                </div>
-                <button type="button" class="secondary-btn" id="add-property">Add property</button>
+                <button type="button" class="secondary-btn add-property-btn" id="add-property">Add Property</button>
               </div>
               <div id="properties-list"></div>
               <div id="property-template" class="hidden" aria-hidden="true">
                 <div class="property-row property-template-row">
                   <div class="property-control">
-                    <label> Name
+                    <label>Name
                       <input type="text" class="property-name" placeholder="property_name" pattern="[A-Za-z_][A-Za-z0-9_]*" required="true" disabled="true" />
                     </label>
                   </div>
                   <div class="property-control">
                     <label>Type
                       <select class="property-type" disabled="true">
-                        <option value="string">string</option>
-                        <option value="integer">integer</option>
-                        <option value="number">number</option>
-                        <option value="boolean">boolean</option>
+                        <option value="string">String</option>
+                        <option value="integer">Integer</option>
+                        <option value="number">Number</option>
+                        <option value="boolean">Boolean</option>
                       </select>
                     </label>
                   </div>
@@ -80,7 +79,7 @@
                     </label>
                   </div>
                   <div class="property-control">
-                    <label>Allowed values
+                    <label>Allowed Values
                       <textarea class="property-choices" placeholder="Allowed values, comma-separated (optional)" disabled="true" rows="2"></textarea>
                     </label>
                   </div>
@@ -91,15 +90,17 @@
             </section>
 
             <section class="preview-section">
-              <h3>Macro call preview</h3>
+              <h3>Macro Call Preview</h3>
               <p>This invocation becomes the MCP tool's SPL template.</p>
               <code id="macro-call-preview">Add a property and choose a macro to preview the call.</code>
             </section>
 
-            <div class="field macro-definition-field">
-              <label for="macro-definition">Macro definition</label>
-              <textarea id="macro-definition" placeholder="For example: index=assets host=$entity_dns$" required="true"></textarea>
+            <div class="macro-definition-layout">
               <small id="macro-definition-help">Every property must have a matching <code>$property_name$</code> variable.</small>
+              <div class="field macro-definition-field">
+                <label for="macro-definition">Macro Definition</label>
+                <textarea id="macro-definition" placeholder="For example: index=assets host=$entity_dns$" required="true"></textarea>
+              </div>
             </div>
 
             <div class="form-actions">
