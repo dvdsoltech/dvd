@@ -49,7 +49,7 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
                 type: $row.find(".property-type").val(),
                 description: $.trim($row.find(".property-description").val()),
                 choices: $.trim($row.find(".property-choices").val()),
-                required: $row.find(".property-required").is(":checked")
+                required: true
             };
         }).get().filter(function (property) { return property.name; });
     }
