@@ -1,0 +1,354 @@
+/* Narrow, neutral styling for the MCP tool builder. */
+body {
+    color: #e5e7eb;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.dashboard-panel {
+    background: rgba(0, 0, 0, 0.0) !important;
+}
+
+.mcp-wrap {
+    box-sizing: border-box;
+    width: min(100%, 780px);
+    margin: 8px auto;
+    padding: 22px;
+    color: #e5e7eb;
+    background: rgba(25, 28, 32, 0.62);
+    border: 1px solid rgba(220, 225, 230, 0.16);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+}
+
+.tool-details-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 0.75fr)) minmax(0, 1fr);
+    gap: 10px;
+}
+
+.macro-options-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: end;
+    gap: 14px;
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px dashed rgba(220, 225, 230, 0.28);
+}
+
+.field,
+.property-control {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    min-width: 0;
+}
+
+.mcp-wrap label {
+    color: #c5c9ce;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.mcp-wrap input,
+.mcp-wrap textarea,
+.mcp-wrap select,
+.mcp-wrap button {
+    box-sizing: border-box;
+    max-width: 100%;
+    border: 1px solid rgba(210, 216, 222, 0.2);
+    border-radius: 6px;
+    background: rgba(17, 19, 22, 0.64);
+    color: #e5e7eb;
+    font: inherit;
+    font-size: 13px;
+    padding: 9px 11px;
+}
+
+.tool-details-grid input,
+#tool-description {
+    padding: 7px 8px;
+}
+
+#tool-description {
+    height: 36px;
+    min-height: 36px;
+    resize: vertical;
+}
+
+.mcp-wrap input:focus,
+.mcp-wrap textarea:focus,
+.mcp-wrap select:focus {
+    border-color: #9ca3af;
+    outline: 2px solid rgba(156, 163, 175, 0.18);
+    outline-offset: 1px;
+}
+
+.mcp-wrap textarea {
+    min-height: 82px;
+    resize: vertical;
+}
+
+.macro-name-input,
+.inline-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.macro-name-input {
+    padding-left: 10px;
+    border: 1px solid rgba(210, 216, 222, 0.2);
+    border-radius: 6px;
+    background: rgba(17, 19, 22, 0.64);
+    color: #c5c9ce;
+    font-family: monospace;
+}
+
+.macro-name-input input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+}
+
+.inline-control select {
+    flex: 1;
+    min-width: 0;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.properties-section,
+.preview-section {
+    margin-top: 21px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(220, 225, 230, 0.14);
+}
+
+.section-heading {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.mcp-wrap h3 {
+    margin: 0 0 5px;
+    color: #f3f4f6;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.mcp-wrap p,
+.mcp-wrap small {
+    color: #aeb4bb;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.property-row {
+    display: grid;
+    grid-template-columns: minmax(130px, 1fr) minmax(95px, 0.7fr) minmax(130px, 1.2fr) minmax(130px, 1.2fr);
+    align-items: start;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 12px;
+    border: 1px solid rgba(220, 225, 230, 0.14);
+    border-radius: 8px;
+    background: rgba(17, 19, 22, 0.35);
+}
+
+.property-control > label {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    width: 100%;
+}
+
+.property-control input,
+.property-control select,
+.property-control textarea {
+    width: 100%;
+    min-width: 0;
+}
+
+.property-control textarea {
+    min-height: 58px;
+    height: 58px;
+}
+
+.required-control {
+    display: flex;
+    grid-column: 1;
+    grid-row: 2;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    padding: 4px 2px 0;
+    white-space: nowrap;
+}
+
+.required-control input {
+    flex: 0 0 auto;
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    padding: 0;
+    accent-color: #9ca3af;
+}
+
+.property-row .remove-property {
+    grid-column: 4;
+    grid-row: 2;
+    justify-self: end;
+    align-self: center;
+    margin-top: 4px;
+    white-space: nowrap;
+    cursor: pointer;
+    border-color: rgba(220, 110, 110, 0.35);
+    background: rgba(145, 55, 55, 0.22);
+    color: #e8caca !important;
+}
+
+.property-row .remove-property:hover {
+    border-color: rgba(230, 130, 130, 0.6);
+    background: rgba(145, 55, 55, 0.38);
+}
+
+#macro-call-preview {
+    display: block;
+    overflow-wrap: anywhere;
+    padding: 12px;
+    border: 1px solid rgba(220, 225, 230, 0.16);
+    border-radius: 6px;
+    background: rgba(17, 19, 22, 0.48);
+    color: #d1d5db;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.macro-definition-layout {
+    display: grid;
+    grid-template-columns: minmax(150px, 1fr) minmax(0, 3fr);
+    align-items: center;
+    gap: 16px;
+    margin-top: 18px;
+}
+
+#macro-definition-help {
+    display: block;
+}
+
+.macro-definition-field {
+    min-width: 0;
+}
+
+.form-actions,
+.forms-action {
+    display: flex;
+    gap: 9px;
+    margin-top: 18px;
+    background-color: rgba(0, 0, 0, 0.0) !important;
+}
+
+.mcp-wrap button {
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.mcp-wrap button:hover {
+    border-color: rgba(220, 225, 230, 0.4);
+    background-color: rgba(120, 126, 133, 0.2);
+}
+
+.mcp-wrap .add-property-btn {
+    border-color: rgba(100, 145, 210, 0.4);
+    background: rgba(45, 80, 135, 0.28);
+    color: #d3def0;
+}
+
+.mcp-wrap .add-property-btn:hover {
+    border-color: rgba(125, 170, 230, 0.65);
+    background: rgba(45, 80, 135, 0.42);
+}
+
+.mcp-wrap .primary-btn {
+    border-color: rgba(85, 190, 170, 0.42);
+    background: rgba(35, 135, 120, 0.28);
+    color: #d3eee8;
+}
+
+.mcp-wrap .primary-btn:hover {
+    border-color: rgba(95, 210, 185, 0.65);
+    background: rgba(35, 135, 120, 0.44);
+}
+
+.status-message {
+    display: none;
+    margin-top: 15px;
+    padding: 10px 12px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+.status-message.success {
+    display: block;
+    border-color: rgba(134, 180, 145, 0.3);
+    background: rgba(62, 93, 70, 0.25);
+    color: #c9dfce;
+}
+
+.status-message.error {
+    display: block;
+    border-color: rgba(190, 130, 130, 0.3);
+    background: rgba(100, 54, 54, 0.25);
+    color: #e5caca;
+}
+
+@media (max-width: 700px) {
+    .tool-details-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .macro-options-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .property-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .macro-definition-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .mcp-wrap {
+        padding: 16px;
+    }
+
+    .tool-details-grid,
+    .macro-options-row,
+    .property-row {
+        grid-template-columns: 1fr;
+    }
+
+    .required-control,
+    .property-row .remove-property {
+        grid-column: 1;
+        grid-row: auto;
+    }
+
+    .property-row .remove-property {
+        justify-self: end;
+    }
+}
