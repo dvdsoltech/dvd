@@ -27,5 +27,8 @@ Pairing a macro with an MCP tool turned out to be a useful and quick administrat
 
 The app then produces an MCP tool whose SPL template is the associated macro, with properties that correspond to the macro's variables.
 
+## Recommended convention
+
+Macro and MCP tool names use the dvd_ prefix, which scopes these tools together and keeps them easy to find and separate from your other knowledge objects.
 
 <img width="680" height="1100" alt="example_form" src="https://github.com/user-attachments/assets/b4a447c1-9313-405c-a3a8-227aa98550e4" />
