@@ -245,6 +245,7 @@ body {
 
 #macro-definition-help {
     display: block;
+    width: 200px;
 }
 
 .macro-definition-field {
