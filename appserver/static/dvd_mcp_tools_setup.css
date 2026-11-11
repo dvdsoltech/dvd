@@ -72,8 +72,8 @@ body {
 }
 
 #tool-description {
-    height: 54px;
-    min-height: 54px;
+    height: 36px;
+    min-height: 36px;
     resize: vertical;
 }
 
@@ -132,7 +132,7 @@ body {
 
 .section-heading {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     align-items: center;
     margin-bottom: 12px;
 }

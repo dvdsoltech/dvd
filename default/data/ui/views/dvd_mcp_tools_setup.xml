@@ -1,8 +1,7 @@
-<dashboard version="1.1" script="dvd_mcp_tools_setup.js" stylesheet="dvd_mcp_tools_setup.css,background_dark.css" hideEdit="false" hideExport="false" theme="dark">
-  <label>MCP Tool Builder</label>
+<dashboard version="1.1" script="dvd_mcp_tools_setup.js" stylesheet="dvd_mcp_tools_setup.css,background_dark.css" hideEdit="true" hideExport="true" hideFilters="true" theme="dark">
+  <label>MCP-Macro Tool Builder</label>
   <row>
     <panel>
-      <title>Create a Guided MCP Tool</title>
       <html>
         <div class="mcp-wrap">
           <form id="mcp-form">
@@ -21,7 +20,7 @@
               </div>
               <div class="field description-field">
                 <label for="tool-description">Description</label>
-                <textarea id="tool-description" rows="2" required="true">Search for managed assets</textarea>
+                <textarea id="tool-description" rows="1" required="true">Search for managed assets</textarea>
               </div>
             </div>
 
