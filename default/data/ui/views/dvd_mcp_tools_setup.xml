@@ -90,7 +90,6 @@
 
             <section class="preview-section">
               <h3>Macro Call Preview</h3>
-              <p>This invocation becomes the MCP tool's SPL template.</p>
               <code id="macro-call-preview">Add a property and choose a macro to preview the call.</code>
             </section>
 
