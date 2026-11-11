@@ -1,23 +1,32 @@
 # DVDs
-Simply a tool to organize query macros with MCP tools. Macros serve as a query constraint in the MCP's SPL Template while having the properties align with macro variables. 
 
-Use this simple tool if you have the following requirements
-- You want to organize queries under macros (use outside of MCP tool contexts)
-- Constrain the LLM to pre-determined searches
-- Serve dynamic values within the constraints of a macro through an MCP tool.
-- You have a lot of macros you want mapped to MCP tools
+**Pair Splunk search macros with MCP tools.**
 
-While working on some agentic orchestration projects, there were times that I knew precisely the query or lookup I wanted the agent to reference. The built-in splunk_run_query tool was a bit too open-ended and I knew being more explicit in the prompts wouldn't scale well. Organizing these queries as knowledge objects within the MCP tools seemed doable though mapping tool properties wasn't as strict as I would have liked and less intuitive and flexible than managing the typical Splunk knowledge objects (I can reuse macros outside of the MCP use case context).
+DVDs is a small admin tool that organizes query macros and exposes them as MCP tools. Each macro serves as the tool's SPL template, and the tool's properties map directly to the macro's variables. The LLM supplies arguments, and the query logic stays under your control.
 
-Marrying the Macro to an MCP tool quickly and efficiently presented itself as useful administrative tool. 
+## When to use it
 
-1. Enter the typical MCP tool attributes 
-2. Enter a macro name or select a predefined macro (note the naming convention)
-3. Enter the properties to be passed from MCP to Macro
-4. Finish with the macro definition using the added properties
-5. Create the pair. 
+- You want to organize queries as macros, including for use outside MCP contexts
+- You want to constrain the LLM to predetermined searches
+- You want to pass dynamic values through an MCP tool within the bounds of a macro
+- You have many macros you'd like to map to MCP tools
 
-The tool zips these together producing an MCP tool with the associated macro as its SPL template and properties that correspond with the macro variables. 
+## Background
 
-Of course, you could do this all manually...
-Or until Splunk roles out something out native :)
+While building agentic orchestration projects, I often knew exactly which query or lookup I wanted the agent to run. The built-in `splunk_run_query` tool was too open-ended, and tightening the prompts wouldn't scale. Managing these queries as knowledge objects behind MCP tools seemed like the right approach, but mapping tool properties by hand was less strict than I wanted, and less intuitive and flexible than working with standard Splunk knowledge objects. Macros, for example, can be reused well beyond the MCP use case.
+
+Pairing a macro with an MCP tool turned out to be a useful and quick administrative workflow, so I built a tool for it.
+
+## How it works
+
+1. Enter the standard MCP tool attributes (name, title, description).
+2. Enter a new macro name or select an existing one. Macro names use the `dvd_` prefix.
+3. Define the properties to pass from the MCP tool to the macro.
+4. Write the macro definition using those properties as variables (e.g., `$property_name$`).
+5. Create the pair.
+
+DVDs then produces an MCP tool whose SPL template is the associated macro, with properties that correspond to the macro's variables.
+
+## Why not do it manually?
+
+You could, and it works fine. Or you could wait until Splunk ships something native. :)
