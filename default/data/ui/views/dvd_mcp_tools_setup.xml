@@ -1,5 +1,12 @@
 <dashboard version="1.1" script="dvd_mcp_tools_setup.js" stylesheet="dvd_mcp_tools_setup.css,background_dark.css" hideEdit="true" hideExport="true" hideFilters="true" theme="dark">
   <label>MCP-Macro Tool Builder</label>
+    <row>
+    <html>
+    <p>
+      This form creates a constrained MCP tool backed by a predefined SPL macro. Tool properties map to macro variables, so the LLM supplies only arguments, not query logic. Use this instead of splunk_run_query when you need predictable, tightly scoped searches.
+    </p>
+    </html>
+  </row>
   <row>
     <panel>
       <html>
