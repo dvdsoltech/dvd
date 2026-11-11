@@ -1,2 +1,5 @@
 [viewstates]
+access = read : [*]
+
+[macros]
 access = read : [*], write : [*]
