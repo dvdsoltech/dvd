@@ -207,7 +207,7 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
             var choices = splitList(property.choices);
             if (choices.length) { field.enum = choices.map(function (choice) { return parseChoice(choice, property.type); }); }
             schema.properties[property.name] = field;
-            required.push(property.name); }
+            required.push(property.name); 
         });
         if (required.length) { schema.required = required; }
         return schema;
