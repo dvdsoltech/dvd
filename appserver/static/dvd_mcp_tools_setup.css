@@ -357,29 +357,29 @@ body {
 }
 
 * MAIN BAR */
-.view---pages-enterprise---dev---3Pzai {
+    .view---pages-enterprise---dev---3Pzai {
       background-color: rgba(0,0,0,0.0) !important;
       min-width: 1000px !important;
-}
+    }
 
-.view---pages-dark---dev---3Pzai {
+    .view---pages-dark---dev---3Pzai {
       background-color: #242422   !important;
-}
-.navBar---pages-dark---dev---3gUds {
-     background-color: #242422   !important;
-}
-
+      //min-width: 1000px !important;
+    }
+    .navBar---pages-dark---dev---3gUds {
+ background-color: #242422   !important;
+    }
 
 /* APP BAR ICON */
-.icon---pages-enterprise---dev---ITlH- img{
+    .icon---pages-enterprise---dev---ITlH- img{
      opacity: 0.0 !important;
 }
-.icon---pages-dark---dev---ITlH- img{
+    .icon---pages-dark---dev---ITlH- img{
      opacity: 0.0 !important;
-}
-.dashboard-export-container{
+    }
+    .dashboard-export-container{
      opacity: 0 !important;
-}
+    }
 .name---pages-enterprise---dev---2WKGH{
       background-color:  rgba(0,0,0,0.0) !important;
       background-position: center left !important;
@@ -390,7 +390,7 @@ body {
       background-size: 40px 40px !important;
       padding: 15px !important;
       display: inline !important;
-}
+    }
 .name---pages-dark---dev---2WKGH{
       background-color:  rgba(0,0,0,0.0) !important;
       background-position: center left !important;
@@ -398,12 +398,12 @@ body {
       table-layout: fixed !important;
       z-index: -1 !important;
       background-overflow: visible !important;
-     
+
      background-size: 40px 40px !important;
       padding: 15px !important;
       padding-left: 30px !important;
       display: inline !important;
-}
+    }
 .view---pages-dark---dev---3_JB9{
       padding-top:3px !important;
       padding-bottom: 3px !important;
@@ -412,9 +412,40 @@ body {
 
 /* APP BAR */
 .view---pages-enterprise---dev---3_JB9 {
-     width: 0px !important;
-     max-width: 300px !important;
+ width: 0px !important;
+ max-width: 300px !important;
 }
 .view---pages-dark---dev---3_JB9 {
-     max-width: 545px !important;
+ max-width: 545px !important;
 }
+
+    .name---pages-enterprise---dev---2WKGH{
+      color: rgb(17,39,75);
+      color: #ffffff !important;
+    }
+    .name---pages-dark---dev---2WKGH{
+      color: rgb(17,39,75) !important;
+      color: #ffffff !important;
+    }
+
+.view---pages-dark---dev---1zrJY{
+      background: rgba(0,0,0,0.0) !important; /* Old browsers */
+    }
+
+
+    .view---pages-enterprise---dev---14_Tp{
+      padding: 3px 10px !important;
+      padding-top: 0px !important;
+      padding-bottom: 0px !important;
+      color: white !important;
+    }
+
+    .underline---pages-enterprise---dev---bxeh0 {
+      background-color:yellow !important;
+      opacity: 0.2 !important;
+    }
+    .underline---pages-dark---dev---bxeh0 {
+      background-color:yellow !important;
+      opacity: 0.2 !important;
+    }
+
