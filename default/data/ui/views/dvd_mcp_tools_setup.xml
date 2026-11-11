@@ -1,24 +1,22 @@
 <dashboard version="1.1" script="dvd_mcp_tools_setup.js" stylesheet="dvd_mcp_tools_setup.css,background_dark.css" hideEdit="true" hideExport="true" hideFilters="true" theme="dark">
   <label>MCP-Macro Tool Builder</label>
-    <row>
-    <html>
-    <p>
-      This form creates a constrained MCP tool backed by a predefined SPL macro. Tool properties map to macro variables, so the LLM supplies only arguments, not query logic. Use this instead of splunk_run_query when you need predictable, tightly scoped searches.
-    </p>
-    </html>
-  </row>
+    
   <row>
     <panel>
       <html>
         <div class="mcp-wrap">
-          <form id="mcp-form">
+        <h1>DEFINE MCP/MACRO DETAILS</h1>
+          <p>
+          This form creates a constrained MCP tool backed by a predefined SPL macro. Tool properties map to macro variables, so the LLM supplies only arguments, not query logic. Use this instead of splunk_run_query when you need predictable, tightly scoped searches.
+          </p>
+          <form id="mcp-form"  style="border-top: 1px solid grey; padding-top:20px;">
             <div class="tool-details-grid">
               <div class="field">
-                <label for="tool-name">Tool Name</label>
+                <label for="tool-name">MCP Tool Name</label>
                 <input id="tool-name" type="text" value="" required="true" />
               </div>
               <div class="field">
-                <label for="tool-title">Title</label>
+                <label for="tool-title">MCP Title</label>
                 <input id="tool-title" type="text" value="" required="true" />
               </div>
               <div class="field">
