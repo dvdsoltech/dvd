@@ -25,7 +25,7 @@ Pairing a macro with an MCP tool turned out to be a useful and quick administrat
 4. Write the macro definition using those properties as variables (e.g., `$property_name$`).
 5. Create the pair.
 
-DVDs then produces an MCP tool whose SPL template is the associated macro, with properties that correspond to the macro's variables.
+The app then produces an MCP tool whose SPL template is the associated macro, with properties that correspond to the macro's variables.
 
 Up until 
 
