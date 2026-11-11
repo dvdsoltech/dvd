@@ -76,12 +76,12 @@
                   </div>
                   <div class="property-control">
                     <label>Description
-                      <input type="text" class="property-description" placeholder="Description for the LLM" disabled="true" />
+                      <textarea class="property-description" placeholder="Description for the LLM" disabled="true" rows="2"></textarea>
                     </label>
                   </div>
                   <div class="property-control">
                     <label>Allowed values
-                      <input type="text" class="property-choices" placeholder="Allowed values, comma-separated (optional)" disabled="true" />
+                      <textarea class="property-choices" placeholder="Allowed values, comma-separated (optional)" disabled="true" rows="2"></textarea>
                     </label>
                   </div>
                   <label class="required-control"><input type="checkbox" class="property-required" disabled="true" /> Required</label>
