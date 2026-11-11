@@ -145,9 +145,7 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
                 value: "", text: macros.length ? "Select a Prebuilt dvd_ Macro" : "No dvd_ Macros Found in This App"
             }));
             macros.forEach(function (macro) { $select.append($("<option>", { value: macro.name, text: macro.name })); });
-            if (!macros.length) {
-                setStatus("No prebuilt dvd_ macros were returned for app '" + appId() + "'. Check app selection and permissions.", true);
-            }
+
             updatePreview();
         }).fail(function (message) {
             showMacroLoadError("Unable to Load Macros", "Could not load macros from app '" + appId() + "': " + message);
