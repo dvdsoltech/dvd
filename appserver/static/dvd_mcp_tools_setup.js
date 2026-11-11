@@ -192,13 +192,13 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
         var schema = { type: "object", properties: {
             app: {
                 type: "string",
-                description: "External app ID selected in the tool builder.",
+                description: "Splunk app context to run the SPL query in (e.g., 'search', 'enterprise_security'). Set this when the user specifies an app — omitting it means app-scoped field extractions and lookups will not be applied.",
                 enum: [app],
                 default: app
             },
             workload_pool: {
                 type: "string",
-                description: "Workload pool to use; determine this value after inference."
+                description: "Splunk workload pool to run this search in."
             }
         } };
         var required = [];
