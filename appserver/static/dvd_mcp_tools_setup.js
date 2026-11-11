@@ -99,7 +99,7 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
         $("#macro-definition").prop("readonly", existing);
 
         if (!existing) {
-            $("#macro-definition-help").html("Every property must have a matching <code>$property_name$</code> variable.");
+            $("#macro-definition-help").html("Every added property must have a corresponding <code>$property_name$</code> variable in the macro definition.");
         } else if (macro) {
             $("#macro-definition").val(macro.definition);
             $("#macro-definition-help").text("Prebuilt macro definition is read-only. Property names must match its arguments and variables.");
