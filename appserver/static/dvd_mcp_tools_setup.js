@@ -133,7 +133,7 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
                 var data = typeof response.data === "string" ? JSON.parse(response.data) : response.data;
                 macros = ((data && data.entry) || []).map(function (entry) {
                     return {
-                        name: entry.name.replace(/\\s*\\([^)]*\\)$/, ""),
+                        name: entry.name.replace(/\s*\([^)]*\)$/, ""),
                         args: macroArgs(entry),
                         definition: (entry.content && entry.content.definition) || ""
                     };
@@ -191,7 +191,7 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
         var schema = { type: "object", properties: {
             app: {
                 type: "string",
-                description: "Splunk app context to run the SPL query in (e.g., 'search', 'enterprise_security'). Set this when the user specifies an app — omitting it means app-scoped field extractions and lookups will not be applied.",
+                description: "Splunk app context to run the SPL query in (e.g., 'search', 'enterprise_security'). Set this when the user specifies an app — omitting it means app-scoped field extraction and saved searches are used by default.",
                 enum: [app],
                 default: app
             },
