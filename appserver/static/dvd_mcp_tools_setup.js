@@ -277,7 +277,7 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
     function onReset() {
         $("#mcp-form")[0].reset();
         $("#properties-list").empty();
-        $("#external-app-id").val("search");
+        $("#external-app-id").val("dvd");
         $("#macro-definition").val("");
         $("#status-message").removeClass("error success").text("");
         syncMacroMode();
