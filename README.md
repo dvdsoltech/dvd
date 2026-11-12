@@ -13,7 +13,9 @@ DVDs is a small admin tool that organizes query macros and exposes them as MCP t
 
 ## Background
 
-While working on agentic orchestration projects, I often, or at least sometimes, knew exactly which query or lookup I wanted the agent to run and preferred in those cases for it to stick to what I had in mind. The built-in `splunk_run_query` tool was too open-ended, and tightening the prompts wouldn't scale. Managing these queries as knowledge objects behind MCP tools seemed like the right approach, but mapping tool properties by hand was less strict than I wanted, and less intuitive and flexible than working with standard Splunk knowledge objects. Macros, for example, can be reused well beyond the MCP use case.
+While working on agentic orchestration projects, I often, or at least sometimes, knew exactly which query or lookup I wanted the agent to run and preferred in those cases for it to stick to what I had in mind. The built-in `splunk_run_query` tool was too open-ended, and being more explicit in the prompts wouldn't scale. I had started creating query catalogs that agents would reference to pass through the `splunk_run_query` tool but ran into complexities with passing in arguments.
+
+Managing these queries as knowledge objects behind MCP tools seemed like the right approach, but mapping tool properties by hand was cumbersome, and less intuitive and flexible than working with standard Splunk knowledge objects. Macros, for example, can be reused well beyond the MCP use case.
 
 Pairing a macro with an MCP tool turned out to be a useful and quick administrative workflow, so I built a tool for it.
 
