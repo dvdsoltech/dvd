@@ -57,7 +57,8 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
     function currentMacroName() {
         if (isExisting()) { return $("#existing-macro").val() || ""; }
         var suffix = val("#macro-suffix");
-        return suffix ? "dvd_" + suffix : "";
+        if (!suffix) { return ""; }
+        return "dvd_" + suffix + "(" + readProperties().length + ")";
     }
 
     function selectedMacro() {
