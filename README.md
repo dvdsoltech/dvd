@@ -37,4 +37,16 @@ Macro and MCP tool names use the dvd_ prefix, which scopes these tools together 
 
 
 ## Screenshot.
-<img width="680" height="1100" alt="example_form" src="https://github.com/user-attachments/assets/b4a447c1-9313-405c-a3a8-227aa98550e4" />
+
+### Form:
+<img width="805" height="779" alt="start" src="https://github.com/user-attachments/assets/75c7745e-8d77-4bbb-b0b9-4f60a5b08643" />
+
+### Example Filled-Out:
+<img width="682" height="1234" alt="form_filled_in" src="https://github.com/user-attachments/assets/d2d5457f-f2d7-4b5a-9abf-d803b66ac995" />
+
+### Macro Created
+<img width="1088" height="52" alt="macro_created" src="https://github.com/user-attachments/assets/5c01b195-3219-4653-bc9c-7f56ff884061" />
+
+### MCP Tool Created
+<img width="821" height="712" alt="mcp_tool_created" src="https://github.com/user-attachments/assets/234e3d24-94f1-4bb4-a855-7ab55cba57a2" />
+
