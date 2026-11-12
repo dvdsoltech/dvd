@@ -57,8 +57,7 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
     function currentMacroName() {
         if (isExisting()) { return $("#existing-macro").val() || ""; }
         var suffix = val("#macro-suffix");
-        if (!suffix) { return ""; }
-        return "dvd_" + suffix + "(" + readProperties().length + ")";
+        return suffix ? "dvd_" + suffix : "";
     }
 
     function selectedMacro() {
@@ -163,7 +162,7 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
         if (names.some(function (name) { return RESERVED_TOOL_ARGUMENTS.indexOf(name) !== -1; })) {
             return "Property names 'app' and 'workload_pool' are reserved tool arguments.";
         }
-        if (!/^dvd_[A-Za-z0-9_]+$/.test(currentMacroName())) { return "Macro name must start with dvd_ and use a valid suffix."; }
+        if (!/^dvd_[A-Za-z0-9_]+/.test(currentMacroName())) { return "Macro name must start with dvd_ and use a valid suffix."; }
         if (!definition) { return "Macro definition is required."; }
         var missing = names.filter(function (name) { return definition.indexOf(toVar(name)) === -1; })[0];
         if (missing) { return "Macro definition must include " + toVar(missing) + " for every property."; }
@@ -216,7 +215,7 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
     function createMacro(name, definition, properties) {
         var path = "/servicesNS/nobody/" + encodeURIComponent(appId()) + "/configs/conf-macros";
         return request(path, "POST", { output_mode: "json" }, {
-            name: name,
+            name: name + "(" + properties.length + ")",
             definition: definition,
             args: properties.map(function (property) { return property.name; }).join(","),
             iseval: "0"
