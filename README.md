@@ -1,4 +1,4 @@
-# DVDs
+# DVDs - Macro/MCP Tool Builder
 
 **Pair Splunk search macros with MCP tools.**
 
