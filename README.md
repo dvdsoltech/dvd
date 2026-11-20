@@ -2,7 +2,7 @@
 
 **Pair Splunk search macros with MCP tools.**
 
-DVDs is a small admin tool that organizes query macros and exposes them as MCP tools. Each macro serves as the tool's SPL template, and the tool's properties map directly to the macro's variables. The LLM supplies arguments, and the query logic stays under your control.
+DVDs is a small admin tool that creates and organizes query macros and exposes them as MCP tools. Each macro serves as the tool's SPL template, and the tool's properties map directly to the macro's variables. The LLM supplies arguments, and the query logic stays under your control.
 
 ## When to use it
 
