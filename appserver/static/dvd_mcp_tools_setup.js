@@ -231,7 +231,7 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
             inputSchema: buildSchema(properties),
             _meta: {
                 external_app_id: appId(),
-                execution: { type: "spl", template: callTemplate("`" + name , properties + "`"), row_limiter: true, time_range: false },
+                execution: { type: "spl", template: "`" + callTemplate(name , properties) + "`", row_limiter: true, time_range: false },
                 tags: ["mcp", "guided-query"],
                 examples: []
             }
