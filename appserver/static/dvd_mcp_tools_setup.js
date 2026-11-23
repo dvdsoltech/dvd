@@ -3,7 +3,7 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
 
     var service = mvc.createService();
     var IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]*$/;
-    var RESERVED_TOOL_ARGUMENTS = ["app", "workload_pool"];
+    var RESERVED_TOOL_ARGUMENTS = ["workload_pool"];
     var macros = [];
 
     function val(selector) { return $.trim($(selector).val()); }
