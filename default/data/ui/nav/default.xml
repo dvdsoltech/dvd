@@ -1,5 +1,6 @@
 <nav >
   <view name="dvd_mcp_tools_setup" default="true" />
+  <a href="/app/Splunk_MCP_Server/tools">Splunk MCP Server</a>
   <view name="search"  />
   <view name="dashboards" />
 </nav>
