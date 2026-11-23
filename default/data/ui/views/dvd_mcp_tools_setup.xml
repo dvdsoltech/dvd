@@ -102,6 +102,7 @@
               <small id="macro-definition-help">Every property added must have a corresponding <b>$property_name$</b> within the macro definition.</small>
               <div class="field macro-definition-field">
                 <label for="macro-definition">Macro Definition</label>
+                <label for="macro-definition" style="font-style:italic;">Note: inputlookup definitions should be written without leading "|". The "|" will be included in the MCP tool definition.</label>
                 <textarea id="macro-definition" placeholder="For example: index=assets host=$entity_dns$" required="true"></textarea>
               </div>
             </div>
