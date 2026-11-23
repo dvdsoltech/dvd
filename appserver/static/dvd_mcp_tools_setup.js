@@ -224,6 +224,10 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
 
     function createTool(name, properties) {
         var toolName = val("#tool-name");
+        var definition = val("#macro-definition").trim();
+        var firstWord = definition.split(/\s+/)[0].replace(/["'`]/g, "");
+        var template = (firstWord.toLowerCase() === "inputlookup" ? "|" : "") + " `" + callTemplate(name, properties) + "`";
+        
         var payload = {
             name: toolName,
             title: val("#tool-title"),
@@ -231,7 +235,7 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
             inputSchema: buildSchema(properties),
             _meta: {
                 external_app_id: appId(),
-                execution: { type: "spl", template: "`" + callTemplate(name , properties) + "`", row_limiter: true, time_range: false },
+                execution: { type: "spl", template: template, row_limiter: true, time_range: false },
                 tags: ["mcp", "guided-query", "macro"],
                 examples: []
             }
