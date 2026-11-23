@@ -188,12 +188,12 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
     function buildSchema(properties) {
         var app = appId();
         var schema = { type: "object", properties: {
-            app: {
-                type: "string",
-                description: "Splunk app context to run the SPL query in (e.g., 'search', 'enterprise_security'). Set this when the user specifies an app — omitting it means app-scoped field extraction and saved searches are used by default.",
-                enum: [app],
-                default: app
-            },
+            #app: {
+            #    type: "string",
+            #    description: "Splunk app context to run the SPL query in (e.g., 'search', 'enterprise_security'). Set this when the user specifies an app — omitting it means app-scoped field extraction and saved searches are used by default.",
+            #    enum: [app],
+            #    default: app
+            #},
             workload_pool: {
                 type: "string",
                 description: "Splunk workload pool to run this search in.",
