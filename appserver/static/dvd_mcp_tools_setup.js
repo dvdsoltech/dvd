@@ -7,7 +7,7 @@ require(["splunkjs/mvc", "jquery"], function (mvc, $) {
     var macros = [];
 
     function val(selector) { return $.trim($(selector).val()); }
-    function appId() { return val("#external-app-id") || "search"; }
+    function appId() { return val("#external-app-id") || "dvd"; }
     function isExisting() { return $("#macro-mode").val() === "existing"; }
     function toVar(name) { return "$" + name + "$"; }
 
